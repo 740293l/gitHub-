@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>墨韵书阁 - 个人书香图书分享空间</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", SimSun, serif;
+        }
+        /* 温馨治愈主题色 */
+        :root {
+            --bg-warm: #fff9e8;
+            --card-white: #ffffff;
+            --warm-yellow: #f9e9bc;
+            --wood-brown: #6b4f37;
+            --text-dark: #3a2e23;
+            --text-gray: #776655;
+            --price-red: #c83c3c;
+            --radius: 10px;
+            --shadow: 0 2px 10px rgba(107, 79, 55, 0.08);
+            --highlight: #e8c888;
+        }
+        body {
+            background-color: var(--bg-warm);
+            color: var(--text-dark);
+            line-height: 1.75;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ========== 灵动温馨动态背景：飘落书页动画 ========== */
+        .fall-paper {
+            position: fixed;
+            top: -10%;
+            z-index: -1;
+            opacity: 0.25;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.25;
+            }
+            90% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 卡片轻柔渐入+悬浮微动动画 */
+        .content-card, .side-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+        .content-card:nth-child(1) {animation-delay: 0.1s;}
+        .content-card:nth-child(2) {animation-delay: 0.25s;}
+        .content-card:nth-child(3) {animation-delay: 0.4s;}
+        .side-card:nth-child(1) {animation-delay: 0.15s;}
+        .side-card:nth-child(2) {animation-delay: 0.3s;}
+        .side-card:nth-child(3) {animation-delay: 0.45s;}
+        .side-card:nth-child(4) {animation-delay: 0.6s;}
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .content-card:hover, .side-card:hover {
+            transform: translateY(-4px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 6px 16px rgba(107, 79, 55, 0.12);
+        }
+
+        /* 按钮轻柔呼吸微动动画 */
+        .enter-btn {
+            animation: breathe 3s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0%,100% {transform: scale(1);}
+            50% {transform: scale(1.03);}
+        }
+
+        /* 标签悬浮微动 */
+        .tag-group span:hover {
+            animation: tagMove 0.3s ease;
+        }
+        @keyframes tagMove {
+            0% {transform: translateY(0);}
+            50% {transform: translateY(-3px);}
+            100% {transform: translateY(0);}
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* 全屏首页封面 */
+        .hero-banner {
+            width: 100%;
+            height: 540px;
+            background: linear-gradient(rgba(0,0,0,0.42), rgba(0,0,0,0.42)),
+            url("https://images.pexels.com/photos/1370295/pexels-photo-1370295.jpeg?auto=compress&cs=tinysrgb&w=1260") center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-align: center;
+            padding: 0 40px;
+            position: relative;
+        }
+        .hero-banner h1 {
+            font-size: 48px;
+            letter-spacing: 8px;
+            margin-bottom: 16px;
+        }
+        .hero-banner .sub-title {
+            font-size: 19px;
+            margin-bottom: 22px;
+            opacity: 0.93;
+        }
+        .hero-desc {
+            max-width: 760px;
+            font-size: 16px;
+            margin-bottom: 38px;
+            line-height: 1.8;
+        }
+        .enter-btn {
+            padding: 15px 44px;
+            background: var(--warm-yellow);
+            color: var(--wood-brown);
+            border: none;
+            border-radius: 32px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            font-weight: 500;
+        }
+        .enter-btn:hover {
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: none;
+        }
+
+        /* 导航栏（固定置顶） */
+        .navbar {
+            background-color: var(--warm-yellow);
+            display: flex;
+            align-items: center;
+            padding: 15px 22px;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 2px 8px rgba(107, 79, 55, 0.06);
+        }
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--wood-brown);
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            margin: 0 10px;
+            font-size: 14px;
+            padding: 5px 9px;
+            border-radius: 6px;
+            transition: 0.25s;
+        }
+        .nav-links a:hover {
+            background: #fff;
+            color: var(--wood-brown);
+        }
+        .search-box {
+            flex: 1;
+            text-align: center;
+        }
+        .search-box input {
+            width: 280px;
+            padding: 7px 14px;
+            border: 1px solid #ddccb0;
+            border-radius: 22px;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .search-box input:focus {
+            border-color: var(--wood-brown);
+            box-shadow: 0 0 0 3px rgba(249, 233, 188, 0.5);
+        }
+        .user-icon {
+            font-size: 15px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.4);
+            transition: 0.25s;
+        }
+        .user-icon:hover {
+            background: #fff;
+        }
+
+        /* 顶部横幅大图 */
+        .top-banner {
+            width: 100%;
+            height: 190px;
+            background: url("https://images.pexels.com/photos/2041540/pexels-photo-2041540.jpeg?auto=compress&cs=tinysrgb&w=1260") center/cover no-repeat;
+        }
+
+        /* 主体三栏布局 */
+        .main-wrap {
+            display: grid;
+            grid-template-columns: 160px 1fr 180px;
+            gap: 18px;
+            padding: 18px;
+        }
+
+        /* 左侧分类栏 */
+        .left-sidebar .cate-list {
+            background: var(--card-white);
+            list-style: none;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.05s;
+            opacity: 0;
+        }
+        .cate-list li {
+            padding: 10px 15px;
+            font-size: 14px;
+            border-bottom: 1px solid #f3e9d7;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+        .cate-list li:hover {
+            background: var(--warm-yellow);
+            color: var(--wood-brown);
+            padding-left: 20px;
+        }
+        .cate-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* 右侧侧边栏 吸睛模块 */
+        .right-sidebar .side-card {
+            background: var(--card-white);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 18px;
+            transition: transform 0.3s ease;
+        }
+        .side-card h4 {
+            color: var(--wood-brown);
+            font-size: 15px;
+            margin-bottom: 12px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #f3e9d7;
+        }
+        .side-card p, .side-card li {
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+        .rank-list li {
+            list-style: none;
+            padding: 5px 0;
+            display: flex;
+            gap: 6px;
+        }
+        .rank-top {
+            color: var(--price-red);
+            font-weight: bold;
+        }
+
+        /* 中间主内容区 */
+        .main-content .content-card {
+            background: var(--card-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 22px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .module-title {
+            background: var(--warm-yellow);
+            padding: 8px 16px;
+            font-size: 16px;
+            color: var(--wood-brown);
+            font-weight: 500;
+        }
+        .text-wrap {
+            padding: 18px;
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+
+        /* 书籍条目样式 */
+        .book-item {
+            padding: 18px;
+            border-bottom: 1px solid #f3e9d7;
+            transition: background 0.25s;
+        }
+        .book-item:hover {
+            background-color: #fff9e8;
+        }
+        .book-item:last-child {
+            border-bottom: none;
+        }
+        .book-item h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: var(--wood-brown);
+        }
+        .book-item p {
+            font-size: 14px;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+        }
+        .book-price {
+            color: var(--price-red);
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* 标签按钮组 */
+        .tag-group {
+            display: flex;
+            gap: 16px;
+            padding: 14px 18px;
+        }
+        .tag-group span {
+            background: var(--warm-yellow);
+            padding: 7px 18px;
+            border-radius: 22px;
+            font-size: 14px;
+            color: var(--wood-brown);
+            cursor: pointer;
+            transition: 0.25s;
+        }
+        .tag-group span:hover {
+            background: var(--wood-brown);
+            color: #fff;
+        }
+
+        /* 书友留言板块 */
+        .message-box {
+            padding: 18px;
+        }
+        .message-item {
+            background: #fff9e8;
+            padding: 12px;
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            transition: 0.3s;
+        }
+        .message-item:hover {
+            background: #fff2d0;
+        }
+        .message-name {
+            font-weight: bold;
+            color: var(--wood-brown);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        /* 页脚 */
+        footer {
+            background: #e8ddcb;
+            text-align: center;
+            padding: 28px;
+            margin-top: 35px;
+            color: var(--text-gray);
+            font-size: 14px;
+            animation: fadeUp 0.6s ease forwards;
+            animation-delay: 0.7s;
+            opacity: 0;
+        }
+        footer p {
+            margin: 6px 0;
+        }
+
+        /* 移动端自适应 */
+        @media (max-width:768px) {
+            .main-wrap {
+                grid-template-columns: 1fr;
+            }
+            .left-sidebar,.right-sidebar {
+                margin-bottom: 18px;
+            }
+            .search-box input {
+                width: 170px;
+            }
+            .nav-links a {
+                margin: 0 5px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 温馨动态飘落书页背景元素（JS自动生成） -->
+    <script>
+        // 生成随机飘落书页背景动画
+        const paperCount = 15;
+        const body = document.body;
+        for(let i = 0; i < paperCount; i++){
+            const paper = document.createElement('div');
+            paper.className = 'fall-paper';
+            // 随机大小、位置、动画时长
+            const size = Math.random() * 18 + 8;
+            paper.style.width = size + 'px';
+            paper.style.height = size + 'px';
+            paper.style.left = Math.random() * 100 + '%';
+            paper.style.animationDuration = (Math.random() * 12 + 8) + 's';
+            paper.style.animationDelay = Math.random() * 10 + 's';
+            paper.style.background = '#f9e9bc';
+            paper.style.borderRadius = '2px';
+            body.appendChild(paper);
+        }
+    </script>
+
+    <!-- 全屏温馨首页封面 -->
+    <div class="hero-banner">
+        <h1>墨韵书阁</h1>
+        <div class="sub-title">于墨香之间，邂逅温柔的阅读时光</div>
+        <div class="hero-desc">
+            这里是我的私人精神自留地，也是面向所有读书爱好者的线上书香小站。多年来我坚持收藏纸质好书、沉淀深度阅读感悟，拒绝网络上碎片化的流量书单，只分享亲身通读、反复打磨后的优质书籍推荐与原创读书笔记。
+            无论是沉淀千年的国学经典、治愈迷茫的心理散文，还是跌宕起伏的现实文学，你都能在这里找到契合内心的文字力量。愿我们以书为媒，在安静的文字世界里，治愈焦虑、拓宽眼界、丰盈平凡的人生。
+        </div>
+        <button class="enter-btn" onclick="document.getElementById('mainBox').scrollIntoView()">踏入书阁，开启阅读之旅</button>
+    </div>
+
+    <div id="mainBox" class="container">
+        <!-- 导航栏 -->
+        <div class="navbar">
+            <div class="logo">墨韵书阁</div>
+            <div class="nav-links">
+                <a href="#">网站首页</a>
+                <a href="#">畅销好书</a>
+                <a href="#">图书分类</a>
+                <a href="#">原创读书笔记</a>
+                <a href="#">私人精选书单</a>
+                <a href="#">书友留言区</a>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="搜索书籍名称、读书感悟">
+            </div>
+            <div class="user-icon">👤 我的</div>
+        </div>
+
+        <!-- 顶部书店横幅 -->
+        <div class="top-banner"></div>
+
+        <div class="main-wrap">
+            <!-- 左侧分类栏 -->
+            <aside class="left-sidebar">
+                <ul class="cate-list">
+                    <li>经典小说作品</li>
+                    <li>经济商业管理</li>
+                    <li>个人成长励志</li>
+                    <li>历史人物传记</li>
+                    <li>生活美学时尚</li>
+                    <li>文艺散文艺术</li>
+                    <li>人文社会科学</li>
+                    <li>中华国学经典</li>
+                    <li>情绪心理学</li>
+                    <li>中外人文历史</li>
+                </ul>
+            </aside>
+
+            <!-- 中间主内容区域（已删除容器1、容器2） -->
+            <main class="main-content">
+                <!-- 模块：四大名著精选推荐 -->
+                <div class="content-card">
+                    <div class="module-title">猜你喜欢 · 四大国学传世名著推荐</div>
+                    <div class="book-item">
+                        <h3>《红楼梦》｜中国古典文学的巅峰绝唱</h3>
+                        <p>作为中国古典小说的天花板，本书以贾、史、王、薛四大家族的兴衰起落为主线，描绘大观园中一众少男少女的爱恨离愁、命运浮沉。书中融入古典诗词、传统民俗、古代建筑、饮食礼仪等海量传统文化知识，看似写儿女情长，实则道尽人间世事无常、人情冷暖。无论品读多少遍，总能挖掘出新的人生感悟，是值得用一生反复研读的传世经典。</p>
+                        <div class="book-price">官方参考售价：¥49.80</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《资治通鉴》｜古人留给现代人的处世教科书</h3>
+                        <p>由北宋史学家司马光耗时十余年编撰的编年体通史，横跨一千三百余年历史岁月，详细记录了历代王朝的政权更迭、权谋博弈、民生百态。取名“鉴于往事，有资于治道”，意在让后人从历史的成败得失中吸取经验教训。无论是职场人际交往、商业格局决策，还是个人人生规划，都能从千年历史沉浮中收获通透的生存智慧。</p>
+                        <div class="book-price">官方参考售价：¥68.50</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《孙子兵法》｜全世界流传最广的东方谋略经典</h3>
+                        <p>全书仅仅六千余字，却诞生了影响世界两千多年的顶级博弈智慧。原本是古代军事典籍，如今早已被广泛运用在商业谈判、职场竞争、人际关系、个人人生布局之中。隐忍、预判、布局、取舍、顺势而为，每一句兵法箴言，都能帮我们跳出固有思维局限，拉高看待问题的格局与眼界，是创业者、职场人、普通人都该精读的人生谋略之书。</p>
+                        <div class="book-price">官方参考售价：¥29.90</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《古文观止》｜流传三百年的国民古文启蒙圣经</h3>
+                        <p>这本经典古文选集精选了从先秦到明清222篇传世散文佳作，涵盖论辩文、山水游记、书信传记、诗词序表等多种文体。熟读本书，不仅可以快速提升文言文阅读理解能力、积累高分写作素材，更能透过古代文人的笔墨，感受家国情怀、文人风骨与东方文字独有的含蓄美感，是学生、文字爱好者、传统文化爱好者的入门必读书籍。</p>
+                        <div class="book-price">官方参考售价：¥35.60</div>
+                    </div>
+                </div>
+
+                <!-- 标签筛选栏 -->
+                <div class="tag-group">
+                    <span>新书上架</span>
+                    <span>高分畅销读物</span>
+                    <span>口碑热门好书</span>
+                </div>
+
+                <!-- 模块：当代热门好书推荐 -->
+                <div class="content-card">
+                    <div class="module-title">新书上架 · 当代高分口碑读物推荐</div>
+                    <div class="book-item">
+                        <h3>《活着》｜人是为了活着本身而活着</h3>
+                        <p>余华最经典的现实主义文学代表作，讲述了农民福贵跌宕坎坷的一生：从富家少爷落魄到底层农夫，接连失去所有亲人，晚年只剩下自己与一头老牛相依相伴。全书没有华丽的文字修饰，用最朴素平淡的笔触，写尽命运的残酷与生命的坚韧。无数深陷生活焦虑、人生迷茫的读者，都在这本书里读懂了生存的意义，与平凡的生活和解。</p>
+                        <div class="book-price">官方售价：¥39.00</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《平凡的世界》｜平凡，从来不是平庸的借口</h3>
+                        <p>路遥耗费数年心血创作的百万字长篇巨著，以上世纪七八十年代的陕北黄土高原为时代背景，讲述孙少安、孙少平兄弟在贫瘠苦难的生活里，坚守善良、追逐理想、奋力谋生的人生故事。书中写尽普通人的挣扎、隐忍、不甘与温柔，告诉我们绝大多数人的一生终将归于平凡，但我们依然可以坚守热爱、保持善良，在琐碎的日常里活出发光的自己。</p>
+                        <div class="book-price">官方售价：¥65.00</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《陪你走过漫长岁月》｜治愈孤独的人间温柔随笔</h3>
+                        <p>这是一本写给每一个孤独迷茫者的暖心散文集，作者用细腻柔软的文字，捕捉生活里细碎的温柔瞬间：傍晚的晚风、街边的灯火、温热的奶茶、陌生人的善意……治愈焦虑、内耗、孤独的情绪，让我们学会在平凡的烟火日常里，发现藏在人间的浪漫与美好，接纳情绪，好好拥抱自己。</p>
+                        <div class="book-price">官方售价：¥39.00</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《驯鸽之王》｜扎根乡土的现实文学力作</h3>
+                        <p>本书以旧时代北方乡村为故事背景，围绕驯鸽这项乡土技艺展开叙事，刻画了几代乡村普通人在时代变迁中的命运沉浮、人情冷暖。文字质朴厚重，既描绘了淳朴的乡土温情，也直面人性的复杂与生活的无奈，带领读者回望旧时代乡土社会的众生百态，读懂普通人在时代洪流里的坚守与挣扎。</p>
+                        <div class="book-price">官方售价：¥78.00</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《盗墓笔记》｜国民级悬疑探险文学经典</h3>
+                        <p>作为国内悬疑探险小说的标杆之作，本书以古墓探秘为主线，融合民间民俗传说、历史秘闻、悬疑冒险、人性温情多重元素，剧情跌宕反转、人物鲜活立体。跟随吴邪一行人踏入一座座隐秘古墓，在惊险的冒险旅程里，见证生死羁绊、兄弟情义，既是一场刺激的探秘之旅，也是一场关于成长、信任与坚守的人生修行。</p>
+                        <div class="book-price">官方售价：¥35.00</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《盗墓笔记（精装典藏版）》｜收藏级完整全集</h3>
+                        <p>精装典藏礼盒版本，收录全系列完整正文、官方番外、作者随笔手记，装帧精致烫金工艺，纸质精良适合长期收藏。不仅可以沉浸式完整读完所有探险故事，还能解锁人物幕后创作故事、未公开剧情设定，是悬疑文学爱好者的收藏首选。</p>
+                        <div class="book-price">官方售价：¥72.00</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《沙丘之王》｜震撼全球的科幻史诗巨作</h3>
+                        <p>本书构建了一个宏大又充满人文思辨的外星星际世界观，围绕沙漠星球阿拉基斯的稀有资源，几大家族、宗教势力、星际帝国展开权力博弈。故事融合冒险、权谋、宗教、生态、人性多重思考，格局宏大、立意深刻，不仅是一场奇幻的星际冒险，更是一部探讨欲望、信仰、命运的哲学经典，影响了后世无数科幻作品创作。</p>
+                        <div class="book-price">官方售价：¥45.00</div>
+                    </div>
+                    <div class="book-item">
+                        <h3>《水浒传》｜中国古典白话小说的侠义传奇</h3>
+                        <p>四大名著之一，讲述北宋末年一百零八位江湖好汉被逼上梁山、聚义替天行道的传奇故事。书中刻画了性格迥异的英雄人物，描绘江湖侠义、官场黑暗、人情冷暖，既歌颂底层小人物的反抗与忠义，也深刻折射封建时代的社会弊病，是了解中国传统侠义文化、古典白话文学的必读经典。</p>
+                        <div class="book-price">官方售价：¥68.00</div>
+                    </div>
+                </div>
+
+                <!-- 书友留言吸睛板块 -->
+                <div class="content-card">
+                    <div class="module-title">书友留言区 · 以书会友，分享阅读感悟</div>
+                    <div class="message-box">
+                        <div class="message-item">
+                            <div class="message-name">书友小楠</div>
+                            <p>在墨韵书阁种草了《活着》，读完之后瞬间和解了当下的内耗焦虑，原来好好平凡地活着，本身就是最大的幸运。期待站长后续分享更多治愈类好书！</p>
+                        </div>
+                        <div class="message-item">
+                            <div class="message-name">历史爱好者阿泽</div>
+                            <p>跟着推荐读完《资治通鉴》，很多职场里想不通的人际关系难题，在历史故事里找到了答案，推荐所有职场人读一读！</p>
+                        </div>
+                        <div class="message-item">
+                            <div class="message-name">学生书友小雨</div>
+                            <p>《古文观止》的推荐太实用了，积累了超多作文素材，现在写作文文笔提升特别明显，感谢站长的用心整理！</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- 右侧侧边栏（保留全部吸睛模块） -->
+            <aside class="right-sidebar">
+                <div class="side-card">
+                    <h4>📖 关于墨韵书阁</h4>
+                    <p>本站创建于2026年，属于个人非商业公益读书分享站点，所有书籍推荐、读书笔记均为本人亲身阅读后原创撰写，无带货、无付费推广，只为搭建一个纯粹的书友交流小空间。</p>
+                </div>
+
+                <div class="side-card">
+                    <h4>🔥 本站热门书单TOP5</h4>
+                    <ul class="rank-list">
+                        <li><span class="rank-top">NO.1</span>《活着》</li>
+                        <li><span class="rank-top">NO.2</span>《平凡的世界》</li>
+                        <li><span class="rank-top">NO.3</span>《红楼梦》</li>
+                        <li><span class="rank-top">NO.4</span>《资治通鉴》</li>
+                        <li><span class="rank-top">NO.5</span>《盗墓笔记》</li>
+                    </ul>
+                </div>
+
+                <div class="side-card">
+                    <h4>💡 趣味读书小知识</h4>
+                    <p>经常深度阅读的人，共情能力、逻辑思考能力会显著高于碎片化刷手机人群；每天坚持30分钟沉浸式阅读，坚持一年，你的表达能力、眼界格局都会发生肉眼可见的提升。</p>
+                </div>
+
+                <div class="side-card">
+                    <h4>✍️ 站长读书寄语</h4>
+                    <p>我们无法无限拉长生命的长度，但可以通过阅读拓宽人生的宽度。不必追赶别人的脚步，在属于自己的节奏里，慢慢读书、慢慢成长，终会在文字里遇见更好的自己。</p>
+                </div>
+            </aside>
+        </div>
+
+        <!-- 网站页脚 -->
+        <footer>
+            <p>墨韵书阁 · 个人书香图书分享网站 © 2026 版权所有</p>
+            <p>本站所有文案内容均为原创，仅供书友学习交流，未经授权禁止转载、商用使用</p>
+            <p>书友交流邮箱：bookmoyun@163.com | 欢迎投稿你的读书心得与宝藏好书推荐</p>
+        </footer>
+    </div>
+</body>
+</html>
